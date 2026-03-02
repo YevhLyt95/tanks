@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 import Tank from './classes/Tank';
 import Enemy from './classes/Enemy';
+import EnemyManager from './classes/EnemyManager';
 
 const app = new PIXI.Application();
 
@@ -8,7 +9,6 @@ async function init() {
    console.log("1. Початок ініціалізації");
    await app.init({
      resizeTo: window,
-     antialias: true,
      backgroundColor: 0x35693d
    });
 
@@ -31,26 +31,11 @@ async function init() {
 
    player.x = app.screen.width / 2;
    player.y = app.screen.height / 2;
+   app.stage.addChild(player);
 
-   const enemy = new Enemy(
-    textures[assets.enemyBody],
-    textures[assets.enemyBarrel]
-   );
-
-
-   enemy.eventMode = 'static';
-   enemy.cursor = 'pointer';
-
-   enemy.on('pointerdown', () => {
-    if(player.shoot()) {
-      enemy.takeDamage(10);
-      console.log("enemy takes damage");
-    }
-   });
-
-   app.stage.addChild(player, enemy);
-
+   const enemyManager = new EnemyManager(app, textures, 5);
    const keys = {};
+
    window.addEventListener('keydown',(e) => keys[e.code] = true);
    window.addEventListener('keyup', (e) => keys[e.code] = false);
 
@@ -58,19 +43,17 @@ async function init() {
 
    app.ticker.add(() => {
     const mouse = app.renderer.events.pointer;
-    const dx = mouse.x - player.x;
-    const dy = mouse.y - player.y;
-    player.rotateBarrel(Math.atan2(dy, dx) + Math.PI / 2);
-
-    if (keys['KeyW'] || keys['ArrowUp']) player.y -= player.speed;
-    if (keys['KeyS'] || keys['ArrowDown']) player.y += player.speed;
-    if (keys['KeyA'] || keys['ArrowLeft']) player.x -= player.speed;
-    if (keys['KeyD'] || keys['ArrowRight']) player.x += player.speed;
-    enemy.drive();
-    enemy.aiming(player.x, player.y);
-
+    player.rotateBarrel(Math.atan2(mouse.y - player.y, mouse.x - player.x) + Math.PI / 2);
+    if (keys['KeyW']) player.y -= player.speed;
+    if (keys['KeyS']) player.y += player.speed;
+    if (keys['KeyA']) player.x -= player.speed;
+    if (keys['KeyD']) player.x += player.speed;
+    
     handleScreenWrap(player);
-    handleScreenWrap(enemy);
+
+    enemyManager.update(player.x, player.y);
+
+    enemyManager.activeEnemies.forEach(e => handleScreenWrap(e));
    });
 }
 

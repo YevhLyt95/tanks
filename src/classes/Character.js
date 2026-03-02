@@ -1,18 +1,21 @@
 import * as PIXI from 'pixi.js';
 
-export default class Character extends PIXI.Sprite {
+export default class Character extends PIXI.Container {
     constructor(texture, hp, speed) {
-        super(texture);
+        super();
 
+        this.body = new PIXI.Sprite(texture);
+        this.body.anchor.set(0.5);
+        this.addChild(this.body);
         this.hp = hp;
         this.maxHp = hp;
         this.speed = speed;
-        //anchor point for rotation
-        this.anchor.set(0.5);
+        
 
         this.healthBar = new PIXI.Graphics();
         this.drawHealthBar();
         this.addChild(this.healthBar);
+        console.log("texture: ", texture);
     }
 
     drawHealthBar(){
@@ -40,7 +43,7 @@ export default class Character extends PIXI.Sprite {
 
         if (this.hp <= 0) {
             console.log("Unit destroyed");
-            this.destroy();
+            this.visible = false;
         }
     }
 }

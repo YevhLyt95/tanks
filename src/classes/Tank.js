@@ -7,7 +7,7 @@ export default class Tank extends Character {
         super(bodyTexture, 100, 2);
         this.ammo = ammo;
         this.barrel = new PIXI.Sprite(barrelTexture);
-        this.barrel.anchor.set(0.5, 0.5);
+        this.barrel.anchor.set(0.5, 0.9);
         this.addChild(this.barrel);
 
         this.ammoLabel = new PIXI.Text({
