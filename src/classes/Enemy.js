@@ -18,7 +18,8 @@ export default class Enemy extends Character {
     }
 
     drive() {
-        this.x += Math.cos(this.rotation - Math.PI / 2) * this.speed;
-        this.y += Math.sin(this.rotation - Math.PI / 2) * this.speed;
+        const angle = this.barrel.rotation;
+        this.x += Math.cos(angle - Math.PI / 2) * this.speed;
+        this.y += Math.sin(angle - Math.PI / 2) * this.speed;
     }
 }

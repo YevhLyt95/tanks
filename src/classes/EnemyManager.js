@@ -1,4 +1,3 @@
-import * as PIXI from 'pixi.js';
 import Enemy from './Enemy';
 
 export default class EnemyManager {
@@ -23,7 +22,6 @@ export default class EnemyManager {
             enemy.drawHealthBar();
         } else {
             enemy = new Enemy(enemyBody, enemyBarrel);
-            this.setupInteractivity(enemy);
             this.app.stage.addChild(enemy);
         }
 
@@ -34,12 +32,12 @@ export default class EnemyManager {
     setupInteractivity(enemy) {
         enemy.eventMode = 'static';
         enemy.cursor = 'pointer';
-        enemy.on('pointerdown', () => {
+        /*enemy.on('pointerdown', () => {
             enemy.takeDamage(20);
             if(enemy.hp <= 0) {
                 this.despawn(enemy);
             }
-        });
+        }); */
     }
 
     resetPosition(enemy) {

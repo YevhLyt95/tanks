@@ -28,14 +28,26 @@ export default class Tank extends Character {
         this.barrel.rotation = angle;
     }
 
+    getMuzzlePosition() {
+        const angle = this.barrel.rotation;
+        const offset = this.barrel.height * 0.9;
+        return {
+            x: this.x + Math.cos(angle - Math.PI / 2) * offset,
+            y: this.y + Math.sin(angle - Math.PI / 2) * offset,
+            angle: angle
+        };
+    }
+
     shoot() {
         if (this.ammo > 0) {
             this.ammo--;
             this.ammoLabel.text = `Ammo: ${this.ammo}`;
-            return true;
+            return this.getMuzzlePosition();
         } else {
             this.ammoLabel.text = "No ammo";
-            return false;
+            return null;
         }
+
+
     }
 }
