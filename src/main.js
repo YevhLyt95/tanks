@@ -8,6 +8,7 @@ let enemyBullets = [];
 let bullets = [];
 let enemyManager;
 let player;
+let msg;
 const keys = {};
 
 async function init() {
@@ -27,6 +28,15 @@ async function init() {
     player.x = app.screen.width / 2;
     player.y = app.screen.height / 2;
     app.stage.addChild(player);
+
+    msg = new PIXI.Text({
+    text: '', 
+    style: { fill: 0xff0000, fontSize: 50, fontWeight: 'bold' }
+    });
+    msg.anchor.set(0.5);
+    msg.x = app.screen.width / 2;
+    msg.y = app.screen.height / 2;
+    app.stage.addChild(msg);
 
     enemyManager = new EnemyManager(app, textures, 5);
 
@@ -129,7 +139,9 @@ function checkCollisions() {
             b.destroyBullet(app.stage);
 
             if(player.hp <= 0) {
-                alert("Game over, you are dead");
+                msg.text = "GAME OVER! You are dead";
+                app.ticker.stop();
+                setTimeout(() => window.location.reload(), 10000);
                 window.location.reload();
             }
         }
