@@ -4,6 +4,7 @@ import Bullet from './classes/Bullet';
 import EnemyManager from './classes/EnemyManager';
 
 const app = new PIXI.Application();
+let enemyBullets = [];
 let bullets = [];
 let enemyManager;
 let player;
@@ -49,11 +50,24 @@ function handlePlayerShoot() {
 function gameLoop() {
     updatePlayer();
     updateBullets();
-    enemyManager.update(player.x, player.y);
+    if(enemyManager) {
+        enemyManager.update(player.x, player.y);
+
+        enemyManager.activeEnemies.forEach(enemy => {
+            const shotData = enemy.tryShoot();
+            if(shotData && enemy.visible) {
+                const b = new Bullet(shotData.x, shotData.y, shotData.angle);
+                b.fill({color: 0xff0000});
+                app.stage.addChild(b);
+                enemyBullets.push(b);
+            }
+        });
+    }
     checkCollisions();
     
     // clean up (Filter creates new array without "garbage")
     bullets = bullets.filter(b => !b.toRemove);
+    enemyBullets = enemyBullets.filter(b => !b.toRemove);
 }
 
 function updatePlayer() {
@@ -76,6 +90,12 @@ function updateBullets() {
             b.destroyBullet(app.stage);
         }
     });
+    enemyBullets.forEach(b => {
+        b.update();
+        if(b.x < 50 || b.x > app.screen.width + 50 || b.y < -50 || b.y > app.screen.height + 50) {
+            b.destroyBullet(app.stage);
+        }
+    })
 }
 
 function checkCollisions() {
@@ -97,6 +117,23 @@ function checkCollisions() {
         });
     });
     
+    enemyBullets.forEach(b => {
+        if(b.toRemove) return;
+
+        const dx = b.x - player.x;
+        const dy = b.y - player.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+
+        if(dist < 30) {
+            player.takeDamage(10);
+            b.destroyBullet(app.stage);
+
+            if(player.hp <= 0) {
+                alert("Game over, you are dead");
+                window.location.reload();
+            }
+        }
+    })
     // tank collision
     enemyManager.activeEnemies.forEach(enemy => {
         const dx = player.x - enemy.x;
