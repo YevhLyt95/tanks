@@ -3,13 +3,13 @@ import * as PIXI from 'pixi.js';
 export default class Bullet extends PIXI.Graphics {
     constructor(x, y, angle) {
         super();
-
-        this.fill({color: 0xffff00});
         this.poly([
             0, -8,
             4, 4,
             -4, 4
         ]);
+        this.fill({color: 0xffff00});
+        
         
         this.x = x;
         this.y = y;
