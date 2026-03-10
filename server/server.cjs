@@ -18,6 +18,13 @@ app.post('/api/stats', (req, res) => {
     res.json({status: 'ok', message: 'Data recieved!'});
 });
 
-app.listen(300, () => {
+app.get('/stats', (req, res) => {
+    res.json(db);
+});
+
+app.get('/', (req, res) =>{
+    res.send('<h1>Server works!</h1><p>Whatch statistics: <a href="/stats">/stats</a></p>')
+})
+app.listen(3000, () => {
     console.log('🚀 Сервер статистики запущено на http://localhost:3000');
 });

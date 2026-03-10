@@ -3,12 +3,15 @@ import Tank from './classes/Tank';
 import Bullet from './classes/Bullet';
 import EnemyManager from './classes/EnemyManager';
 
+
 const app = new PIXI.Application();
 let enemyBullets = [];
 let bullets = [];
 let enemyManager;
 let player;
 let msg;
+let score = 0;
+let startTime = Date.now();
 const keys = {};
 
 async function init() {
@@ -121,7 +124,10 @@ function checkCollisions() {
 
             if (dist < 40) {
                 enemy.takeDamage(20);
-                if (enemy.hp <= 0) enemyManager.despawn(enemy);
+                if (enemy.hp <= 0) {
+                    enemyManager.despawn(enemy);
+                    score++;
+                }
                 b.destroyBullet(app.stage);
             }
         });
@@ -141,6 +147,21 @@ function checkCollisions() {
             if(player.hp <= 0) {
                 msg.text = "GAME OVER! You are dead";
                 app.ticker.stop();
+                const gameTime = Math.floor((Date.now() - startTime) / 1000);
+
+                fetch('http://localhost:3000/api/stats', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type' : 'application/json',
+                    },
+                    body: JSON.stringify({
+                        kills: score,
+                        time: gameTime
+                    })
+                })
+                .then(response => response.json())
+                .then(data => console.log('Server: ', data.message))
+                .catch(err => console.error('Error: ', err));
                 setTimeout(() => window.location.reload(), 10000);
                 window.location.reload();
             }
